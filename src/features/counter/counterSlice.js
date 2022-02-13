@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { fetchCount } from './counterAPI';
+import coinGecko from '../../apis/coinGecko';
 
 const initialState = {
   value: 0,
@@ -19,6 +20,42 @@ export const incrementAsync = createAsyncThunk(
     return response.data;
   }
 );
+
+export const fetchData = createAsyncThunk('details/fetchData', async (id) => {
+  const [day, week, year, detail] = await Promise.all([
+    coinGecko.get(`/coins/${id}/market_chart/`, {
+      params: {
+        vs_currency: 'usd',
+        days: '1',
+      },
+    }),
+    coinGecko.get(`/coins/${id}/market_chart/`, {
+      params: {
+        vs_currency: 'usd',
+        days: '7',
+      },
+    }),
+    coinGecko.get(`/coins/${id}/market_chart/`, {
+      params: {
+        vs_currency: 'usd',
+        days: '365',
+      },
+    }),
+    coinGecko.get('/coins/markets/', {
+      params: {
+        vs_currency: 'usd',
+        ids: id,
+      },
+    }),
+  ]);
+
+  setCoinData({
+    day: formatData(day.data.prices),
+    week: formatData(week.data.prices),
+    year: formatData(year.data.prices),
+    detail: detail.data[0],
+  });
+});
 
 export const counterSlice = createSlice({
   name: 'counter',
