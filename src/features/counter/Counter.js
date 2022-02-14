@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   decrement,
@@ -7,10 +7,14 @@ import {
   incrementAsync,
   incrementIfOdd,
   selectCount,
+  fetchData,
 } from './counterSlice';
 import styles from './Counter.module.css';
 
 export function Counter() {
+  useEffect(() => {
+    fetchData("bitcoin")
+  }, []);
   const count = useSelector(selectCount);
   const dispatch = useDispatch();
   const [incrementAmount, setIncrementAmount] = useState('2');
