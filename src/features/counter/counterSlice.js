@@ -21,6 +21,11 @@ export const incrementAsync = createAsyncThunk(
   }
 );
 
+const formatData = (data) => data.map((el) => ({
+  t: el[0],
+  y: el[1].toFixed(2),
+}));
+
 export const fetchData = createAsyncThunk('details/fetchData', async (id) => {
   const [day, week, year, detail] = await Promise.all([
     coinGecko.get(`/coins/${id}/market_chart/`, {
@@ -49,12 +54,16 @@ export const fetchData = createAsyncThunk('details/fetchData', async (id) => {
     }),
   ]);
 
-  setCoinData({
-    day: formatData(day.data.prices),
+
+  let coinData = { day: formatData(day.data.prices),
     week: formatData(week.data.prices),
     year: formatData(year.data.prices),
-    detail: detail.data[0],
-  });
+    detail: detail.data[0]}
+
+  return coinData;
+  // setCoinData({
+   
+  // });
 });
 
 export const counterSlice = createSlice({
